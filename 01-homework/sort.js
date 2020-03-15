@@ -1,10 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const rimraf = require("rimraf");
+const rimraf = require('rimraf');
 
 const [sourcePath, newPath, deleteSourcePath = ''] = process.argv.slice(2);
-console.log(process.argv.slice(2));
-// $ node sort.js sourcePath newPath deleteSourcePath(optional)
 
 if (!sourcePath || !newPath) {
   process.exit(console.error('Не правильно указан исходный или будущий путь папок'));
@@ -27,7 +25,6 @@ const sortDir = (unsortedFilesPath, initNestedLevel) => {
       if (!fs.existsSync(pathDirByFirstSymbol)) {
         fs.mkdirSync(pathDirByFirstSymbol);
       }
-      console.log('aa', pathFileInNewDir);
       if (!fs.existsSync(pathFileInNewDir)) {
         fs.link(
           path.join(unsortedFilesPath, file),
@@ -39,7 +36,7 @@ const sortDir = (unsortedFilesPath, initNestedLevel) => {
   });
 
   if (deleteSourcePath === 'delete' || deleteSourcePath === '-d') {
-    rimraf(sourcePath, () => console.log('Исходный файл удален'));
+    rimraf(sourcePath);
   }
 };
 
