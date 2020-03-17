@@ -34,10 +34,10 @@ const sortDir = (unsortedFilesPath, initNestedLevel) => {
       }
     }
   });
-
-  if (deleteSourcePath === 'delete' || deleteSourcePath === '-d') {
-    rimraf(sourcePath);
-  }
 };
 
 sortDir(sourcePath, 0);
+
+if (deleteSourcePath === 'delete' || deleteSourcePath === '-d') {
+  rimraf(sourcePath, () => console.log('Исходный файл успешно удален'));
+}
