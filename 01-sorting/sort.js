@@ -30,7 +30,7 @@ async function sortDir (unsortedFilesPath, initNestedLevel) {
 }
 
 if (!sourcePath || !newPath) {
-  process.exit(console.error('Не правильно указан исходный или будущий путь папок'));
+  process.exit(console.log('Не правильно указан исходный или будущий путь папок'));
 }
 
 (async () => {
