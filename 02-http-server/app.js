@@ -2,6 +2,7 @@ const express = require('express');
 require('dotenv').config();
 const app = express();
 
+const connections = [];
 const interval = Number(process.env.INTERVAL);
 const duration = Number(process.env.DURATION);
 
@@ -15,15 +16,16 @@ app.get('/date', (req, res) => {
   }
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Transfer-Encoding', 'chunked');
-  const tickId = setInterval(() => {
-    res.write(`Hello, ${(new Date()).toUTCString()}\n`);
-  }, interval || 5000);
+  connections.push(res);
   setTimeout(() => {
-    clearInterval(tickId);
-    res.write(`End: ${(new Date()).toUTCString()}\n`);
-    res.end();
-  }, duration || 20000);
+    res.send((new Date()).toUTCString());
+    connections.shift();
+  }, duration);
 });
+
+setInterval(() => {
+  // Logs for every reqest
+}, interval);
 
 app.listen(3000, (err) => {
   if (err) {
