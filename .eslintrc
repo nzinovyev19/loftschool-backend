@@ -1,10 +1,13 @@
 {
   "extends": "standard",
+  "env": {
+    "jest": true
+  },
   "rules": {
     "no-extra-semi": "error",
     "semi": [ 2, "always" ]
   },
   "parserOptions": {
-    "ecmaVersion": 2015
+    "ecmaVersion": 2017
   }
 }
