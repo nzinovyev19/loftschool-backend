@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-const indexController = require('../controllers/index');
+const homeController = require('../controllers/home');
 
 router.get('/', async (req, res) => {
   try {
-    const result = await indexController.getSkills();
-    console.log(result);
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.render('pages/index', { title: 'Home' });
+    const result = await homeController.getSkills();
+    res.render('pages/home', { title: 'Home', skills: result });
   } catch (e) {
     console.error(e);
     res.status(400).json({
