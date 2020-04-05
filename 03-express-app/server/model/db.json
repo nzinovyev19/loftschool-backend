@@ -13,5 +13,9 @@
       "number": 1,
       "text": "Лет на сцене в качестве скрипача"
     }
-  ]
+  ],
+  "admin": {
+    "login": "nrz2000@mail.ru",
+    "password": "qwerty"
+  }
 }
