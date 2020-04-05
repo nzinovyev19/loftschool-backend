@@ -31,6 +31,7 @@ Thumbs.db
 .idea
 .svn
 .vscode
+.todo
 bower_components
 dist
 build
