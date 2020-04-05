@@ -1,10 +1,12 @@
 const db = require('../model');
-const { updateSkills, createProduct } = db;
+const { updateSkills, createProduct, getSkills } = db;
 
 module.exports = {
   getAdminPage: (req, res) => {
+    const skills = getSkills();
     res.render('pages/admin', {
       title: 'Admin',
+      skills,
       msgfile: req.flash('msgfile')[0],
       msgskill: req.flash('msgskill')[0]
     });
