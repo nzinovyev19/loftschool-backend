@@ -1,21 +1,67 @@
 {
   "skills": [
     {
-      "number": 150,
+      "id": "age",
+      "number": "15",
       "text": "Возраст начала занятий на скрипке"
-    }, {
-      "number": 1,
+    },
+    {
+      "id": "concerts",
+      "number": "15",
       "text": "Концертов отыграл"
-    }, {
-      "number": 1,
+    },
+    {
+      "id": "cities",
+      "number": "15",
       "text": "Максимальное число городов в туре"
-    }, {
-      "number": 1,
+    },
+    {
+      "id": "years",
+      "number": "15",
       "text": "Лет на сцене в качестве скрипача"
     }
   ],
   "admin": {
-    "login": "nrz2000@mail.ru",
+    "email": "nrz2000@mail.ru",
     "password": "qwerty"
-  }
+  },
+  "messages": [
+    {
+      "name": "Никита",
+      "email": "nrz2000@mail.ru",
+      "message": "sdas"
+    }
+  ],
+  "products": [
+    {
+      "src": "./assets/img/products/Work1.jpg",
+      "name": "Вино вдохновение",
+      "price": "600"
+    },
+    {
+      "src": "./assets/img/products/Work2.jpg",
+      "name": "Вино вдохновение",
+      "price": "600"
+    },
+    {
+      "src": "./assets/img/products/Work3.jpg",
+      "name": "Вино вдохновение",
+      "price": "600"
+    },
+    {
+      "src": "./assets/img/products/Work4.jpg",
+      "name": "Вино вдохновение",
+      "price": "600"
+    },
+    {
+      "src": "./assets/img/products/Work5.jpg",
+      "name": "Вино вдохновение",
+      "price": "600"
+    },
+    {
+      "src": "./assets/img/products/Work6.jpg",
+      "name": "Вино вдохновение",
+      "price": "600"
+    }
+  ]
 }
