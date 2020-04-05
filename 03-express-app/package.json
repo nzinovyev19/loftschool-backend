@@ -6,7 +6,7 @@
   "scripts": {
     "start": "set NODE_ENV=development&& gulp",
     "build": "set NODE_ENV=production&& gulp build",
-    "server": "nodemon server.js"
+    "server": "nodemon ./server/server.js"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -42,8 +42,11 @@
     "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
     "jquery": "^3.4.1",
     "lowdb": "^1.0.0",
     "normalize.css": "^7.0.0",
