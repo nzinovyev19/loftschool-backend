@@ -1,13 +1,16 @@
 const path = require('path');
 const flash = require('connect-flash');
+const multer = require('multer');
 const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const upload = multer({ dest: './public/assets/img/products' });
 require('dotenv').config();
 const app = express();
 
 const homeController = require('./controllers/home');
 const loginController = require('./controllers/login');
+const adminController = require('./controllers/admin');
 
 const isAuth = (req, res, next) => {
   if (req.session.isAuth) {
@@ -15,9 +18,6 @@ const isAuth = (req, res, next) => {
   }
   res.redirect('/login');
 };
-
-app.set('views', path.join(__dirname, '../source/template'));
-app.set('view engine', 'pug');
 
 app.use(cookieParser('secret key'));
 app.use(session({
@@ -32,15 +32,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
+app.set('views', path.join(__dirname, '../source/template'));
+app.set('view engine', 'pug');
+
 app.get('/', homeController.getHomePage);
 
 app.post('/', homeController.sendMessage);
 
-app.get('/admin', isAuth, (req, res) => {
-  res.render('pages/admin', {
-    title: 'Admin'
-  });
-});
+app.get('/admin', isAuth, adminController.getAdminPage);
+
+app.post('/admin/skills', adminController.setSkills);
+
+app.post('/admin/upload', upload.single('photo'), adminController.setProducts);
 
 app.get('/login', loginController.getLoginPage);
 
