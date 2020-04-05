@@ -3,22 +3,27 @@ const { getAdminInfo } = db;
 
 module.exports = {
   getLoginPage: (req, res) => {
+    if (req.session.isAuth) {
+      res.redirect('/admin');
+    }
     res.render('pages/login', {
       title: 'Login',
-      msglogin: req.flash('msglogin')
+      msglogin: req.flash('msglogin')[0]
     });
   },
   authorize: (req, res) => {
     try {
+      console.log(req.body);
       const { email, password } = req.body;
-      if (getAdminInfo.email !== email || getAdminInfo.password !== password) {
+      const { email: adminEmail, password: passwordAdmin } = getAdminInfo();
+      if (adminEmail !== email || passwordAdmin !== password) {
         throw new Error('Ошибка');
       }
-      req.flash('msglogin', 'Форма обработана');
+      req.session.isAuth = true;
+      res.redirect('/admin');
     } catch (e) {
       req.flash('msglogin', 'Ошибка при авторизации');
     } finally {
-      console.log(req.flash('msglogin'));
       res.redirect('/login');
     }
   }
