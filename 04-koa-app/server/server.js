@@ -16,8 +16,9 @@ const pug = new Pug({
 app.use(serve(path.join(__dirname, '../public')));
 
 app.keys = ['keys'];
-app.use(session());
-app.use(flash());
-app.use(router.routes());
+app.use(session())
+  .use(flash())
+  .use(router.routes())
+  .use(router.allowedMethods());
 
 app.listen(3001);
