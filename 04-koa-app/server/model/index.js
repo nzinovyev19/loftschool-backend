@@ -12,3 +12,53 @@ module.exports.setMessages = (message) => {
     console.error(e);
   }
 };
+
+module.exports.getAdminInfo = () => {
+  try {
+    return db.get('admin')
+      .value();
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+module.exports.getSkills = () => {
+  try {
+    return db.get('skills')
+      .value();
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+module.exports.getProducts = () => {
+  try {
+    return db.get('products')
+      .value();
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+module.exports.setSkills = (skills) => {
+  try {
+    Object.entries(skills).forEach(([id, number]) => (
+      db.get('skills')
+        .find({ id })
+        .assign({ number })
+        .write()
+    ));
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+module.exports.addProduct = (product) => {
+  try {
+    db.get('products')
+      .push(product)
+      .write();
+  } catch (e) {
+    console.error(e);
+  }
+};
