@@ -1,22 +1,46 @@
 const User = require('../model/user');
+const Token = require('../model/token');
 const { v4: uuidv4 } = require('uuid');
-const jwt = require('jwt-simple');
+const jwt = require('jsonwebtoken');
 const role = require('../helpers/role');
 const { check, validationResult } = require('express-validator');
 
-const tokenExpires = 86400000;
-
-function genToken (user) {
-  const token = jwt.encode({
-    exp: tokenExpires,
-    username: user.username,
-  }, process.env.JWT_SECRET);
-
-  return {
-    token: 'JWT' + token,
-    expires: tokenExpires,
-    user: user.id,
+function genAccessToken (user) {
+  const payload = {
+    type: 'accessToken',
+    userId: user.id,
   };
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: Number(process.env.JWT_ACCESS_EXPIRES) });
+}
+
+function genRefreshToken () {
+  const payload = {
+    id: uuidv4(),
+    type: 'refreshToken',
+  };
+  return {
+    id: payload.id,
+    token: jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRES }),
+  };
+}
+
+function replaceDbRefreshToken (tokenId, userId) {
+  return Token.findOneAndDelete({ userId })
+    .exec()
+    .then(() => Token.create({ tokenId, userId }));
+}
+
+function updateTokens (userId) {
+  const accessToken = genAccessToken(userId);
+  const refreshToken = genRefreshToken();
+
+  return replaceDbRefreshToken(refreshToken.id, userId)
+    .then(() => ({
+      accessToken,
+      accessTokenExpiredAt: Date.now() + process.env.JWT_ACCESS_EXPIRES * 1000,
+      refreshToken: refreshToken.token,
+      refreshTokenExpiredAt: Date.now() + process.env.JWT_REFRESH_EXPIRES * 1000,
+    }));
 }
 
 module.exports = {
@@ -37,8 +61,7 @@ module.exports = {
         permission: user.permission,
         surName: user.surName,
         username: user.username,
-        accessToken: genToken(user),
-        accessTokenExpiredAt: tokenExpires,
+        ...updateTokens(user.id),
       });
     } catch (e) {
       res.status(500).send('Server error');
@@ -51,15 +74,15 @@ module.exports = {
       check('password', 'Invalid password').notEmpty();
 
       const errors = validationResult(req);
-      console.log('validation', errors);
       if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
       }
 
       const user = await User.findOne({ username: req.body.username });
-      console.log(user);
       if (user === null) throw Error('User not found');
       if (user.password !== req.body.password) throw Error('Not valid password or username');
+
+      const tokens = await updateTokens(user.id);
 
       res.status(200).send({
         firstName: user.firstName,
@@ -69,12 +92,40 @@ module.exports = {
         permission: user.permission,
         surName: user.surName,
         username: user.username,
-        accessToken: genToken(user),
-        accessTokenExpiredAt: tokenExpires,
+        ...tokens,
       });
     } catch (e) {
       console.log(e);
       res.status(500).send(e.message);
     }
+  },
+  async refreshTokens (req, res) {
+    const { refreshToken } = req.body;
+    let payload;
+    try {
+      payload = jwt.verify(refreshToken, process.env.JWT_SECRET);
+      if (payload.type !== 'refreshToken') {
+        return res.status(400).json({ message: 'Invalid token' });
+      }
+    } catch (e) {
+      if (e instanceof jwt.TokenExpiredError) {
+        res.status(400).json({ message: 'Token expired' });
+      } else if (e instanceof jwt.JsonWebTokenError) {
+        return res.status(400).json({ message: 'Invalid token' });
+      }
+    }
+    Token.findOne({ tokenId: payload.id })
+      .exec()
+      .then((token) => {
+        if (token === null) {
+          throw new Error('Invalid token');
+        }
+        return updateTokens(token.userId);
+      })
+      .then(tokens => {
+        res.append('Authorization', tokens.refreshToken);
+        return res.json(tokens);
+      })
+      .catch(err => res.status(400).json({ message: err.message }));
   },
 };

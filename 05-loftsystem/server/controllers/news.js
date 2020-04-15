@@ -3,9 +3,9 @@ const New = require('../model/new');
 module.exports = {
   getNews: (req, res) => {
     try {
-      console.log(req.body);
+      console.log('news');
       const news = New.find();
-      console.log(news);
+      res.status(200).json(null);
     } catch (error) {
 
     }
