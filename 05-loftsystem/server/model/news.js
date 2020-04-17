@@ -14,7 +14,7 @@ const newScheme = new Schema({
     type: String,
     required: true,
   },
-  test: {
+  text: {
     type: String,
     required: true,
   },
@@ -34,4 +34,4 @@ const newScheme = new Schema({
   },
 });
 
-module.exports = mongoose.model('news', newScheme);
+module.exports = mongoose.model('new', newScheme);

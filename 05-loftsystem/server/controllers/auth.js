@@ -5,10 +5,10 @@ const jwt = require('jsonwebtoken');
 const role = require('../helpers/role');
 const { check, validationResult } = require('express-validator');
 
-function genAccessToken (user) {
+function genAccessToken (userId) {
   const payload = {
     type: 'accessToken',
-    userId: user.id,
+    userId: userId,
   };
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: Number(process.env.JWT_ACCESS_EXPIRES) });
 }
@@ -20,7 +20,7 @@ function genRefreshToken () {
   };
   return {
     id: payload.id,
-    token: jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRES }),
+    token: jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: Number(process.env.JWT_REFRESH_EXPIRES) }),
   };
 }
 
@@ -46,7 +46,6 @@ function updateTokens (userId) {
 module.exports = {
   async registrate (req, res) {
     try {
-      console.log(req.body);
       const user = new User({
         id: uuidv4(),
         permission: role.user,
@@ -69,7 +68,6 @@ module.exports = {
   },
   async login (req, res) {
     try {
-      console.log('body', req.body);
       check('username', 'Invalid username').notEmpty();
       check('password', 'Invalid password').notEmpty();
 
@@ -79,8 +77,12 @@ module.exports = {
       }
 
       const user = await User.findOne({ username: req.body.username });
-      if (user === null) throw Error('User not found');
-      if (user.password !== req.body.password) throw Error('Not valid password or username');
+      if (user === null) {
+        res.status(400).json({ message: 'User not found' });
+      }
+      if (user.password !== req.body.password) {
+        res.status(400).json({ message: 'Not valid password or username' });
+      }
 
       const tokens = await updateTokens(user.id);
 
@@ -95,12 +97,11 @@ module.exports = {
         ...tokens,
       });
     } catch (e) {
-      console.log(e);
-      res.status(500).send(e.message);
+      res.status(400).send(e.message);
     }
   },
   async refreshTokens (req, res) {
-    const { refreshToken } = req.body;
+    const refreshToken = req.get('Authorization');
     let payload;
     try {
       payload = jwt.verify(refreshToken, process.env.JWT_SECRET);
@@ -109,7 +110,7 @@ module.exports = {
       }
     } catch (e) {
       if (e instanceof jwt.TokenExpiredError) {
-        res.status(400).json({ message: 'Token expired' });
+        return res.status(400).json({ message: 'Token expired' });
       } else if (e instanceof jwt.JsonWebTokenError) {
         return res.status(400).json({ message: 'Invalid token' });
       }
@@ -126,6 +127,8 @@ module.exports = {
         res.append('Authorization', tokens.refreshToken);
         return res.json(tokens);
       })
-      .catch(err => res.status(400).json({ message: err.message }));
+      .catch(err => {
+        res.status(400).json({ message: err.message });
+      });
   },
 };

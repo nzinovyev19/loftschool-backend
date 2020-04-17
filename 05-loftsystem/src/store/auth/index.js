@@ -42,7 +42,6 @@ const permissions = handleActions(
   {
     [setProfileData]: (state, action) => {
       const { permission } = action.payload;
-      console.log(permission);
       return permission;
     },
     [logoutUser]: () => defaultPermissions
