@@ -35,6 +35,9 @@
     "typescript": "^3.8.3",
     "uuid": "^7.0.3"
   },
+  "engines": {
+    "node": "10.x"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

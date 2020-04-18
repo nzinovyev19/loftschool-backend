@@ -11,9 +11,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../build')));
 
-io.on('connection', socketCotnroller);
-
 app.use('/api', require(path.join(__dirname, 'api/v1.0')));
+
+// TODO: add middleware for check header['Authorization'] (frontend too)
+io.on('connection', socketCotnroller);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build/index.html'));
