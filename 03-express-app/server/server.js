@@ -4,7 +4,7 @@ const multer = require('multer');
 const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const upload = multer({ dest: './public/assets/img/products' });
+const upload = multer({ dest: './build/assets/img/products' });
 require('dotenv').config();
 const app = express();
 
